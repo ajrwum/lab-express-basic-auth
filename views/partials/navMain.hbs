@@ -1,0 +1,17 @@
+<nav>
+  <div id="nav-home">
+    <a href="/">Home</a>
+  </div>
+  {{#unless isLoggedIn}}
+  <div id="nav-links">
+    <a href="/signup">Signup</a>
+    <a href="/login">Login</a>
+  </div>
+  {{else}}
+  <div id="nav-links">
+    <a href="/main">Main</a>
+    <a href="/private">Private</a>
+    <a href="/logout">Logout</a>
+  </div>
+  {{/unless}}
+</nav>

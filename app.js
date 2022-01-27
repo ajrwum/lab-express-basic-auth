@@ -12,11 +12,29 @@ const express = require('express');
 // Handles the handlebars
 // https://www.npmjs.com/package/hbs
 const hbs = require('hbs');
+hbs.registerPartials(__dirname + "/views/partials");
+
+// Handle session
+const session = require('express-session');
 
 const app = express();
 
 // ℹ️ This function is getting exported from the config folder. It runs most middlewares
 require('./config')(app);
+
+// init session
+app.use(
+	session({
+		secret:
+			process.env.SESSION_SECRET || "ASecretStringThatSouldBeHARDTOGUESS/CRACK",
+		saveUninitialized: true,
+		resave: true,
+	})
+);
+
+// middlewares used globally
+app.use(require("./middlewares/exposeLoginStatus"));
+
 
 // default value for title local
 const projectName = 'lab-express-basic-auth';
@@ -24,9 +42,17 @@ const capitalized = string => string[0].toUpperCase() + string.slice(1).toLowerC
 
 app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
 
+
 // 👇 Start handling routes here
+
+// - home
 const index = require('./routes/index');
 app.use('/', index);
+
+// - authentication
+const auth = require('./routes/auth');
+app.use('/', auth);
+
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require('./error-handling')(app);
